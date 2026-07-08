@@ -4,19 +4,22 @@ import numpy as np
 import joblib
 from datetime import datetime
 
+# ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="🏥 AI Disease Diagnosis", page_icon="🏥", layout="wide")
 
+# ---------- LOAD MODEL ----------
 @st.cache_resource
 def load_model():
-    model = joblib.load('models/model.pkl')
-    scaler = joblib.load('models/scaler.pkl')
-    encoder = joblib.load('models/encoder.pkl')
-    features = joblib.load('models/features.pkl')
-    diseases = joblib.load('models/diseases.pkl')
+    model = joblib.load('model.pkl')
+    scaler = joblib.load('scaler.pkl')
+    encoder = joblib.load('encoder.pkl')
+    features = joblib.load('features.pkl')
+    diseases = joblib.load('diseases.pkl')
     return model, scaler, encoder, features, diseases
 
 model, scaler, encoder, features, diseases = load_model()
 
+# ---------- SIDEBAR NAVIGATION ----------
 with st.sidebar:
     st.markdown("### 🏥 Navigation")
     page = st.radio("", ["🏠 Home", "🩺 Disease Prediction", "📄 Project Report", "ℹ️ About"])
@@ -24,6 +27,7 @@ with st.sidebar:
     st.markdown(f"**Diseases:** {len(diseases)}")
     st.markdown(f"**Symptoms:** {len(features)}")
 
+# ---------- HOME ----------
 if page == "🏠 Home":
     st.title("🏥 AI Disease Diagnosis System")
     st.markdown("""
@@ -35,6 +39,7 @@ if page == "🏠 Home":
     """)
     st.success("✅ Model loaded successfully. Ready for prediction!")
 
+# ---------- DISEASE PREDICTION ----------
 elif page == "🩺 Disease Prediction":
     st.title("🩺 Disease Prediction")
     st.write("Select all symptoms that apply:")
@@ -83,7 +88,7 @@ elif page == "🩺 Disease Prediction":
                     else:
                         st.success("🟢 Low Risk - Take rest and stay hydrated.")
 
-                # Emergency detection – you can add more symptoms as needed
+                # Emergency detection – add more symptoms as needed
                 emergency = ['chest_pain', 'shortness_breath', 'fainting', 'seizures']
                 if any(s in emergency for s in selected_symptoms):
                     st.error("🚨 Emergency symptoms detected! Seek immediate medical attention.")
@@ -94,6 +99,7 @@ elif page == "🩺 Disease Prediction":
                 col2.markdown("**Home Care**\n- Rest\n- Hydrate\n- Monitor symptoms")
                 col3.markdown("**Diet**\n- Balanced meals\n- Avoid processed food\n- Stay hygienic")
 
+                # ---------- DOWNLOAD REPORT ----------
                 report = f"""
 =====================================
 AI DIAGNOSIS REPORT
@@ -106,6 +112,7 @@ Symptoms: {', '.join(selected_symptoms)}
 """
                 st.download_button("📄 Download Report", report, file_name=f"diagnosis_{datetime.now().strftime('%Y%m%d')}.txt", mime="text/plain")
 
+# ---------- PROJECT REPORT ----------
 elif page == "📄 Project Report":
     st.title("📄 Project Report")
     col1, col2, col3 = st.columns(3)
@@ -139,6 +146,7 @@ elif page == "📄 Project Report":
     **Email:** thamizhmathi477@gmail.com
     """)
 
+# ---------- ABOUT ----------
 else:
     st.title("ℹ️ About")
     st.markdown("""
@@ -147,4 +155,3 @@ else:
     This is an educational project for preliminary diagnosis only.  
     **Always consult a healthcare professional.**
     """)
-print("✅ app.py created.")
