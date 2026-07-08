@@ -1,7 +1,17 @@
+import subprocess
+import sys
+
+# ---- Force install joblib if missing (works on Streamlit Cloud) ----
+try:
+    import joblib
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "joblib"])
+    import joblib
+
+# ---- Now import the rest ----
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
 from datetime import datetime
 
 # ---------- PAGE CONFIG ----------
@@ -48,7 +58,6 @@ elif page == "🩺 Disease Prediction":
     cols = st.columns(4)
     for i, sym in enumerate(features):
         col = cols[i % 4]
-        # Display symptom name nicely (remove underscores)
         display_name = sym.replace('_', ' ').title()
         if col.checkbox(display_name, key=sym):
             selected_symptoms.append(sym)
@@ -58,7 +67,6 @@ elif page == "🩺 Disease Prediction":
             st.warning("Please select at least one symptom.")
         else:
             with st.spinner("Analyzing..."):
-                # Build binary vector
                 input_vec = np.zeros(len(features))
                 for sym in selected_symptoms:
                     if sym in features:
@@ -88,7 +96,6 @@ elif page == "🩺 Disease Prediction":
                     else:
                         st.success("🟢 Low Risk - Take rest and stay hydrated.")
 
-                # Emergency detection – add more symptoms as needed
                 emergency = ['chest_pain', 'shortness_breath', 'fainting', 'seizures']
                 if any(s in emergency for s in selected_symptoms):
                     st.error("🚨 Emergency symptoms detected! Seek immediate medical attention.")
@@ -99,7 +106,6 @@ elif page == "🩺 Disease Prediction":
                 col2.markdown("**Home Care**\n- Rest\n- Hydrate\n- Monitor symptoms")
                 col3.markdown("**Diet**\n- Balanced meals\n- Avoid processed food\n- Stay hygienic")
 
-                # ---------- DOWNLOAD REPORT ----------
                 report = f"""
 =====================================
 AI DIAGNOSIS REPORT
